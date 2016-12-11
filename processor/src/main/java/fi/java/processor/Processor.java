@@ -1,4 +1,4 @@
-package ji.java.processor;
+package fi.java.processor;
 
 
 import com.github.jknack.handlebars.Handlebars;
@@ -7,10 +7,14 @@ import lombok.SneakyThrows;
 import lombok.Value;
 
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.stream.Collector;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.joining;
 
 public class Processor {
@@ -34,6 +38,24 @@ public class Processor {
 
         return new Handlebars().compile("fi").apply(fi);
     }
+
+
+    @SneakyThrows
+    void create(Class<?> clazz, int num) {
+        String fi = convert(clazz, num);
+        System.out.println(fi);
+
+        String packageName = clazz.getPackage().getName().replaceAll("\\.", "/");
+        String className = clazz.getSimpleName();
+        String dirName = "../java8/src/main/java/fi/" + packageName;
+        Path dir = Paths.get(dirName);
+        Path file = Paths.get(dirName + "/" + className + num + ".java");
+
+        Files.createDirectories(dir);
+        Files.createFile(file);
+        Files.write(file, singletonList(fi));
+    }
+
 
     @Getter
     static class Fi {
