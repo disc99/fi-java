@@ -2,6 +2,7 @@ package fi.java.processor;
 
 
 import com.github.jknack.handlebars.Handlebars;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.Value;
@@ -18,7 +19,11 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.joining;
 
 public class Processor {
+    String root;
     Collector<CharSequence, ?, String> byComma = joining(", ");
+    Processor(String root) {
+        this.root = root;
+    }
 
     @SneakyThrows
     String convert(Class<?> clazz, int num) {
@@ -43,16 +48,16 @@ public class Processor {
     @SneakyThrows
     void create(Class<?> clazz, int num) {
         String fi = convert(clazz, num);
-        System.out.println(fi);
 
         String packageName = clazz.getPackage().getName().replaceAll("\\.", "/");
         String className = clazz.getSimpleName();
-        String dirName = "../java8/src/main/java/fi/" + packageName;
+        String dirName = root + "/" + packageName;
         Path dir = Paths.get(dirName);
         Path file = Paths.get(dirName + "/" + className + num + ".java");
 
         Files.createDirectories(dir);
         Files.createFile(file);
+        System.out.println(file);
         Files.write(file, singletonList(fi));
     }
 

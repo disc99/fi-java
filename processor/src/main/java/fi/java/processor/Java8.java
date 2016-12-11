@@ -16,7 +16,8 @@ public class Java8 {
 
     @SneakyThrows
     public static void main(String[] args) {
-        FileUtils.deleteDirectory(Paths.get("../java8/src/main/java/fi").toFile());
+        String root = "./java8/src/main/java/fi";
+        FileUtils.deleteDirectory(Paths.get(root).toFile());
         List<Class<?>> classes = Arrays.asList(
                 Function.class,
                 Supplier.class,
@@ -24,7 +25,7 @@ public class Java8 {
                 Predicate.class
         );
 
-        Processor processor = new Processor();
-        IntStream.rangeClosed(3, 5).forEach(n -> classes.forEach(c -> processor.create(c, n)));
+        Processor processor = new Processor(root);
+        IntStream.rangeClosed(3, 99).forEach(n -> classes.forEach(c -> processor.create(c, n)));
     }
 }
