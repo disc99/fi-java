@@ -26,6 +26,6 @@ public class Java8 {
         );
 
         Processor processor = new Processor(root);
-        IntStream.rangeClosed(3, 99).forEach(n -> classes.forEach(c -> processor.create(c, n)));
+        IntStream.rangeClosed(3, 22).forEach(n -> classes.forEach(c -> processor.create(c, n)));
     }
 }

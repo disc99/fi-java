@@ -1,12 +1,99 @@
-apply {
-    plugin 'java'
-    plugin 'idea'
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
+    }
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+ext {
+    jdk = 1.8
+    encoding = 'UTF-8'
+}
 
-version = '0.0.1'
+configurations {
+    published
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    apply plugin: 'com.jfrog.bintray'
+
+    ext.publish = true
+    bintray {
+        user = bintray_user
+        key = bintray_key
+        configurations = ['published', 'archives']
+        publish = project.publish
+        pkg {
+            repo = 'maven'
+            name = 'fi-java'
+            websiteUrl = 'https://github.com/disc99/fi-java'
+            issueTrackerUrl = 'https://github.com/disc99/fi-java/issues'
+            vcsUrl = 'https://github.com/disc99/fi-java.git'
+            publicDownloadNumbers = true
+            version {
+                name = '0.0.1'
+                vcsTag = '0.0.1'
+            }
+        }
+    }
+}
+
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'maven'
+
+    group = 'fi.java'
+    version = '0.0.1'
+
+    configurations {
+        published
+    }
+
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allSource
+        classifier = 'sources'
+    }
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        published sourceJar
+        published javadocJar
+    }
+
+    compileJava {
+        sourceCompatibility = rootProject.jdk
+        targetCompatibility = rootProject.jdk
+        options.encoding = rootProject.encoding
+    }
+
+    dependencies {
+        testCompile 'junit:junit:4.11'
+    }
+}
+
+project(':java8') {
+
+}
+
+project(':processor') {
+    dependencies {
+        compile group: 'commons-io', name: 'commons-io', version: '2.5'
+        compile group: 'com.github.jknack', name: 'handlebars', version: '4.0.6'
+        compile 'org.projectlombok:lombok:1.16.4'
+    }
+}
 
 task wrapper(type: Wrapper) {
     gradleVersion = '3.2.1'
